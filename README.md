@@ -14,49 +14,71 @@ const APISchema = {
   },
   article: {
     id: 'number',
+    title: 'string',
     comments: ['comment']
   }
 };
 ```
 
-bude se cachovat do indexeddb
+Relay will create some cache with structure like this:
 
 
 ```js
 const APICache = {
   'author-1234': {
-    name: 'Jarda'
+    name: 'PanJarda'
   },
   'comment-1234': {
-    title: 'Ahoj',
+    title: 'Hello',
     author: 1234
   },
   'article-1345': {
+    title: 'Hello',
     comments: [1234, 435435, 6456464]
   }
 }
 ```
 
+Cache will be saved in indexedDB for persistence.
+
+There will be caching strategies and fetching strategies
+
 ```js
-const CacheStrategy = {
-  article: 'embed',
-  comment: 'cascade'
+const fetchingStrateg = {
+  article: 'embed', // will embed all subresources
+  comment: 'cascade' // will wait for ids of subresources and Then
+  // look to cache and fetch only missing resources
+};
+
+const cachingStrategy = {
+  article: 'indexedDB', // save to indexedDB
+  comment: 'memory' // save to in memory cache object
 }
 ```
 
-comments 43543 and 6456464 not found in cache
-then
-get /api/comment/?id=43535,6456464
--> save to cache
-Relay.get('article', 1234)
+And syncing cache state with server on regular basis.
 
 ```js
-Relay.updateCache();
-// specialni endpoint
 Relay.get('update', {
   article: {
+    // <id>: <timestamp or revision number>
     1234: 12312313123,
     1231:12312312123
   }
 })
+```
+
+Then api will answer with newly update objects:
+
+```js
+// api response:
+{
+  article: [
+    {
+      id: 1234,
+      title: 'Hello there',
+      author: 2131421
+    }
+  ]
+}
 ```
