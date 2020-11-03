@@ -82,3 +82,5 @@ Then api will answer with newly update objects:
   ]
 }
 ```
+
+![flowchart](https://raw.githubusercontent.com/PanJarda/simple-relay/master/assets/SimpleRelay.svg)
